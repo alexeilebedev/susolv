@@ -104,7 +104,11 @@ bool ConsistentQ(Game &game) {
 
 void Show(Game &game) {
   for (int i=0; i<81; i++) {
-    printf("%d",int(game.board[i]));
+    if (game.board[i]) {
+      printf("%d",int(game.board[i]));
+    } else {
+      printf(".");
+    }
     if ((i+1)%3==0) {
       printf(" ");
     }
