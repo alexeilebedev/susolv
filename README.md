@@ -1,4 +1,4 @@
-Sudoku solver, use 'make' to build
+9x9 sudoku solver, use 'make' to build
 
 Example of use:
 ~~~
