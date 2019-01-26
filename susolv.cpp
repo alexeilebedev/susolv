@@ -2,20 +2,6 @@
 #include <memory.h>
 #include <stdlib.h>
 
-int _starts[][9]
-= {
-   {0,8,17,26,35,44,53,62,71}//rows
-   ,{0,1,2,3,4,5,6,7,8}//columns
-   ,{0,3,6,26,29,32,53,56,59}//squares
-};
-
-int _offsets[][9]
-= {
-   {0,1,2,3,4,5,6,7,8}// offsets to subsequent cells in each row
-   ,{0,8,17,26,35,44,53,62,71}// .. subsequent cells in each column
-   ,{0,1,2,9,10,11,18,19,20} // ... in each square
-};
-
 struct Game {
   enum {MAX=81};
   // first character is the top-left corner
@@ -128,8 +114,7 @@ bool Solve(Game &game) {
   bool ret=false;
   if (cell >=0 && cell < game.MAX)  {
     for (int value =1; value<=9; value++) {
-      Game temp;
-      temp=game;
+      Game temp(game);
       static int level=0;
       temp.board[cell] = value;
       if (ConsistentQ(temp)) {
