@@ -1,20 +1,21 @@
-// step 1: input board as a string of digits,
-// left-to-right and top to bottom. with . meaning
-// unknown
 #include <stdio.h>
 #include <memory.h>
 #include <stdlib.h>
 
-int _starts[][9] = {
-  {0,8,17,26,35,44,53,62,71}
-  ,{0,1,2,3,4,5,6,7,8}
-  ,{0,3,6,26,29,32,53,56,59}
+int _starts[][9]
+= {
+   {0,8,17,26,35,44,53,62,71}//rows
+   ,{0,1,2,3,4,5,6,7,8}//columns
+   ,{0,3,6,26,29,32,53,56,59}//squares
 };
-int _offsets[][9] = {
-  {0,1,2,3,4,5,6,7,8}
-  ,{0,8,17,26,35,44,53,62,71}
-  ,{0,1,2,9,10,11,18,19,20}
+
+int _offsets[][9]
+= {
+   {0,1,2,3,4,5,6,7,8}// offsets to subsequent cells in each row
+   ,{0,8,17,26,35,44,53,62,71}// .. subsequent cells in each column
+   ,{0,1,2,9,10,11,18,19,20} // ... in each square
 };
+
 struct Game {
   enum {MAX=81};
   // first character is the top-left corner
@@ -26,12 +27,15 @@ struct Game {
   }
 };
 
+// Input one cell into the board
 void AddCell(Game &game, int value) {
   if (game.n<game.MAX) {
     game.board[game.n++] = value;
   }
 }
 
+// Input character -> cell value.
+// If in doubt return 0 (unknown)
 int CharToValue(char c) {
   int ret=0;
   if (c>='1' && c<='9') {
@@ -40,7 +44,7 @@ int CharToValue(char c) {
   return ret;
 }
 
-// Find index of empty cell, -1 = not found
+// Return index of first empty cell in GAME, -1 = not found
 int FindEmptyCell(Game &game) {
   int ret=-1;
   for (int i=0; i<game.MAX; i++) {
@@ -69,13 +73,6 @@ bool ConsistentBlockQ(Game &game, int base, int a1, int a2, int a3, int a4, int 
       break;
     }
   }
-  if (!ret) {
-    // for (int i=0; i<9; i++) {
-    //   printf("%d=%d,",idx[i],game.board[idx[i]]);
-    // }
-    // printf("\n");
-    //printf("%d %d %d %d %d %d %d %d %d\n",base+a1,base+a2,base+a3,base+a4,base+a5,base+a6,base+a7,base+a8,base+aa9);
-  }
   return ret;
 }
 
@@ -86,6 +83,7 @@ bool ConsistentQ(Game &game) {
       return false;
     }
   }
+  // check every column
   for (int x=0; x<9; x++) {
     if (!ConsistentBlockQ(game, x,0,9,18,27,36,45,54,63,72)) {
       return false;
@@ -102,6 +100,7 @@ bool ConsistentQ(Game &game) {
   return true;
 }
 
+// Print board to stdout
 void Show(Game &game) {
   for (int i=0; i<81; i++) {
     if (game.board[i]) {
@@ -132,13 +131,8 @@ bool Solve(Game &game) {
       Game temp;
       temp=game;
       static int level=0;
-      // for (int i=0; i<level; i++) {
-      // 	printf(" ");
-      // }
-      //printf("%d = %d\n",cell,value);
       temp.board[cell] = value;
       if (ConsistentQ(temp)) {
-	//Show(temp);
 	level++;
 	ret = Solve(temp);
 	level--;
@@ -164,16 +158,21 @@ int main(int argc, char **argv) {
     exit(1);
   }
   Game game;
+  // step 1: input board as a string of digits,
+  // left-to-right and top to bottom. with . meaning
+  // unknown
   for (int arg=1; arg<argc; arg++) {
     int len=strlen(argv[arg]);
     for (int i=0; i<len; i++) {
       AddCell(game,CharToValue(argv[arg][i]));
     }
   }
+  // step 2: print initial board
   Show(game);
   if (!ConsistentQ(game)) {
     printf("the board is not consistent\n");
   }
+  // step 3: solve it
   Solve(game);
   return 0;
 }
